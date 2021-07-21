@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/bohdanstryber/chat";
+
+message FromClient {
+    string name = 1;
+    string body = 2;
+}
+
+message FromServer {
+    string name = 1;
+    string body = 2;
+}
+
+service chat {
+    rpc SendMessage (stream FromClient) returns (stream FromServer) {};
+}
