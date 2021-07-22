@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 
+	pb "github.com/bohdanstryber/chat"
 	"google.golang.org/grpc"
 )
 
@@ -25,9 +26,13 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	err := grpcServer.Serve(listen)
+	err = grpcServer.Serve(listen)
 
 	if err != nil {
 		log.Fatalf("Failed to start gRPC server :: %v", err)
 	}
+
+	cs := pb.ChatServerStruct{}
+
+	pb.RegisterChatServer(grpcServer, cs)
 }
