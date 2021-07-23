@@ -5,8 +5,6 @@ import (
 	"math/rand"
 	"sync"
 	"time"
-
-	pb "github.com/bohdanstryber/chat"
 )
 
 type messageUnit struct {
@@ -24,10 +22,10 @@ type messageQue struct {
 var messageQueObject = messageQue{}
 
 type ChatServerStruct struct {
-	pb.UnimplementedChatServer
+	UnimplementedChatServer
 }
 
-func (cs *ChatServerStruct) SendMessage(csi pb.Chat_SendMessageServer) error {
+func (cs *ChatServerStruct) SendMessage(csi Chat_SendMessageServer) error {
 	clientUniqueCode := rand.Intn(1e3)
 
 	go receiveFromStream(csi, clientUniqueCode)
@@ -39,7 +37,7 @@ func (cs *ChatServerStruct) SendMessage(csi pb.Chat_SendMessageServer) error {
 	return <-errCh
 }
 
-func receiveFromStream(cs pb.Chat_SendMessageServer, ClientUniqueCode int) {
+func receiveFromStream(cs Chat_SendMessageServer, ClientUniqueCode int) {
 	for {
 		req, err := cs.Recv()
 
@@ -57,7 +55,7 @@ func receiveFromStream(cs pb.Chat_SendMessageServer, ClientUniqueCode int) {
 	}
 }
 
-func sendToStream(cs pb.Chat_SendMessageServer, clientUniqueCode int, errCh chan error) {
+func sendToStream(cs Chat_SendMessageServer, clientUniqueCode int, errCh chan error) {
 	for {
 		for {
 			time.Sleep(500 * time.Millisecond)
@@ -76,7 +74,7 @@ func sendToStream(cs pb.Chat_SendMessageServer, clientUniqueCode int, errCh chan
 			messageQueObject.mu.Unlock()
 
 			if senderUniqueCode != clientUniqueCode {
-				err := cs.Send(&pb.FromServer{Name: senderNameClient, Body: messageClient})
+				err := cs.Send(&FromServer{Name: senderNameClient, Body: messageClient})
 
 				if err != nil {
 					errCh <- err

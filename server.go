@@ -5,7 +5,8 @@ import (
 	"net"
 	"os"
 
-	pb "github.com/bohdanstryber/chat"
+	"grpcChatServer/chat"
+
 	"google.golang.org/grpc"
 )
 
@@ -13,16 +14,16 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		port = "8000"
+		port = "5000"
 	}
 
-	listen, err := net.Listen("tcp", port)
+	listen, err := net.Listen("tcp", ":"+port)
 
 	if err != nil {
 		log.Fatalf("Could not listen @ %v :: %v", port, err)
 	}
 
-	log.Panicln("Listening @ " + port)
+	log.Println("Listening @ " + port)
 
 	grpcServer := grpc.NewServer()
 
@@ -32,7 +33,12 @@ func main() {
 		log.Fatalf("Failed to start gRPC server :: %v", err)
 	}
 
-	cs := pb.ChatServerStruct{}
+	cs := chat.ChatServerStruct{}
 
-	pb.RegisterChatServer(grpcServer, cs)
+	chat.RegisterChatServer(grpcServer, &cs)
+
+	err = grpcServer.Serve(listen)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC Server :: %v", err)
+	}
 }

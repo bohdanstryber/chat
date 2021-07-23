@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package chat;
+
 option go_package = "github.com/bohdanstryber/chat";
 
 message FromClient {
